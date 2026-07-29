@@ -23,3 +23,9 @@ results/**/*.mov
 !data/metadata/.gitkeep
 !results/.gitkeep
 !report/.gitkeep
+
+# Generated MediaPipe outputs
+results/mediapipe/keypoints/
+results/mediapipe/logs/
+results/mediapipe/analysis/
+results/mediapipe/figures/
