@@ -115,26 +115,26 @@ This table compares each fast clip to the clean average for the same stroke and 
 
 ## Conclusion
 
-The initial MediaPipe analysis suggests that pose estimation is a promising foundation for tennis stroke analysis under controlled recording conditions. Across the 36 self-recorded clips, MediaPipe produced consistently strong full-body pose tracking. The overall detection rates were high for both clean clips (`0.892`) and fast clips (`0.895`), indicating that moderate increases in stroke speed did not significantly reduce tracking reliability in this dataset.
+- MediaPipe performed well on the controlled tennis video dataset. The overall detection scores suggest that MediaPipe could reliably detect the player’s body in most frames, and there were no major full-body tracking failures.
+- Fast movement did not significantly reduce detection reliability in this dataset. The fast clips performed about the same as the clean clips, suggesting that moderate increases in stroke speed did not cause major pose-tracking issues when the player remained visible and the camera was stable.
+- Camera angle affected reliability, but all tested angles were usable. Diagonal-view clips had the highest mean detection score, followed by side view and back view.
+- Stroke type did not create major reliability differences. Serves had the highest average detection score among clean clips, followed by backhands and forehands. All three strokes were tracked well overall.
+- MediaPipe was strongest on central and lower-body landmarks. Shoulders and hips were detected perfectly in the clean clips, while ankles and knees also had high detection rates.
+- Wrists and elbows were the least reliable body regions. Wrist detection had the lowest mean detection score, and elbow detection was also lower. This likely reflects tennis-specific movement patterns where the arms and wrists can be blocked by the torso, overlap with other limbs, or move quickly through the frame.
+- Feature availability followed the same pattern as body-region reliability. Shoulder and hip-based features were available in every clean clip frame, knee-angle features were mostly available, and elbow-angle features were less consistently available.
+- The most reliable first-stage features are shoulder line angle, hip line angle, shoulder-hip separation proxy, and knee angle. Arm-based features, such as elbow angle and wrist path, should be treated more cautiously. They may still be useful, but only when the required shoulder, elbow, and wrist landmarks remain confidently detected.
+- Manual inspection supported the automatic results. The skeleton overlays looked visually strong across clips, with no major failures across stroke type, camera angle, or speed condition.
 
-The results also show that recording angle and body region matter. Diagonal-view clips had the highest average detection rate among clean clips (`0.938`), followed by side view (`0.888`) and back view (`0.849`). However, all three angles still produced usable results, which suggests that a tennis stroke analyzer may not need to rely on one perfect camera angle as long as the player remains fully visible and the video is clearly framed.
+### Limitations
 
-The body-region analysis revealed the most important limitation. MediaPipe tracked central and lower-body landmarks extremely well: shoulders and hips were detected with perfect reliability in the clean clips, ankles were highly reliable, and knees were also strong. In contrast, elbows and wrists were less reliable, with wrists showing the lowest mean detection rate (`0.645`). This difference is likely related to tennis-specific movement and camera angle. Depending on the view and stroke phase, the hitting arm, elbow, or wrist can be partially obstructed by the torso, the non-hitting arm, or the follow-through position. Back-view and side-view clips can especially create moments where the wrist is hidden behind the body or overlaps with another limb.
+- This was a controlled case study using one primary player. The results show that MediaPipe can work well under clear recording conditions, but they do not prove that the model will perform equally well for all players, environments, lighting conditions, or camera setups.
 
-This type of obstruction can affect the confidence score because the model has less visual evidence for the exact landmark location. Even if the skeleton overlay still appears generally correct, the wrist or elbow may receive a lower confidence score or become less stable across frames. This is important for tennis analysis because arm-based features, such as wrist path and elbow angle, depend on accurately locating the shoulder, elbow, and wrist at the same time.
+## Possible Applications to the Tennis Stroke Analyzer
 
-As a result, not all pose-based tennis features should be treated equally. Torso rotation, shoulder alignment, hip alignment, and knee-bend features appear to be more reliable first-stage features, while wrist-path and elbow-angle feedback should be used more cautiously. *The analyzer should only generate detailed arm feedback when the relevant wrist and elbow landmarks remain confidently detected across the important parts of the stroke.*
+- Add a recording-quality check before generating feedback. Since MediaPipe performed well when the full body was visible and the camera was stable, the analyzer should first check whether the player is fully in frame and whether enough important keypoints are detected.
+- Use recording-angle recommendations. Since diagonal and side views performed strongly, the analyzer could recommend these views for form analysis. Back view may still be useful, but it may be better suited for general body-position or footwork feedback rather than detailed arm-position feedback.
 
-Manual overlay inspection supported the overall reliability of the model. The skeletons appeared visually strong across the clips, with no major failures across stroke type, angle, or speed condition. However, the lower confidence scores for wrists and elbows show why visual inspection alone is not enough. A pose overlay can look generally correct while still being less reliable for precise arm-position measurements.
+- Use confidence thresholds before calculating tennis features. For example, elbow angle should only be calculated when the shoulder, elbow, and wrist all have confidence scores above the chosen threshold.
+- Give feedback based on feature reliability. Instead of always returning every possible analysis, the system could decide which feedback is trustworthy for each clip. For example, one clip might receive shoulder-turn and knee-bend feedback, while another might skip wrist-path feedback because wrist tracking was unstable.
 
-The main takeaway is that MediaPipe can support a tennis stroke analyzer, but the analyzer should be confidence-aware. *Instead of assuming that every pose measurement is trustworthy, the system should check whether the required keypoints are reliable before generating feedback.* Features based on shoulders, hips, and knees can be prioritized first, while arm-based feedback should only be shown when wrist and elbow confidence remain high enough.
-
-Because this dataset uses one primary player and controlled recording conditions, these findings should be interpreted as a case study rather than a universal benchmark. Future analysis should test additional players, more difficult recording conditions, and other pose estimation models such as MoveNet or YOLO Pose. Still, these initial results provide a strong technical basis for building a more reliable tennis stroke analyzer: one that evaluates the quality of its own pose data before giving coaching feedback.
-
-Possible application to the tennis stroke analyzer:
-
-- Recommend the most reliable recording angle.
-- Add a confidence check before giving feedback.
-- Avoid wrist-path feedback when wrist tracking is unstable.
-- Use lower-body feedback only when ankles and knees remain visible.
-- Treat serve analysis more cautiously if fast-motion clips are less reliable.
+- Add warnings when occlusion affects tracking. If the wrist or elbow disappears behind the body during contact or follow-through, the analyzer should lower confidence in arm-based feedback or explain that the clip is not ideal for arm analysis.
