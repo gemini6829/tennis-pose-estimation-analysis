@@ -1,6 +1,6 @@
 # Tennis Pose Estimation Analysis
 
-This project evaluates whether pose estimation models can reliably support tennis stroke analysis in real-world practice videos.
+This project evaluates whether pose estimation models can reliably support tennis stroke analysis in real-world practice videos. The findings are applied to my AI-powered stroke analyzer application, improving feedback accuracy by optimizing camera placement and prioritizing reliable landmarks.
 
 ## Main Question
 
