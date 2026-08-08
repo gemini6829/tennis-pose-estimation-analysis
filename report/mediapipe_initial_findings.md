@@ -1,8 +1,6 @@
 # MediaPipe Initial Findings
 
-This file summarizes the first MediaPipe reliability analysis for the tennis pose estimation dataset.
-
-The metric used here is the average detection rate across important body keypoints:
+The metric used is the average detection rate across important body keypoints:
 
 - shoulders
 - elbows
@@ -11,165 +9,127 @@ The metric used here is the average detection rate across important body keypoin
 - knees
 - ankles
 
-A value closer to 1.000 means the keypoints were detected confidently in more frames.
+Values closer to 1 have higher confidence.
 
 ## Dataset Overview
 
-| condition | stroke | view | clip_count |
-| --- | --- | --- | --- |
-| clean | backhand | back | 3 |
-| clean | backhand | diag | 3 |
-| clean | backhand | side | 3 |
-| clean | forehand | back | 3 |
-| clean | forehand | diag | 3 |
-| clean | forehand | side | 3 |
-| clean | serve | back | 3 |
-| clean | serve | diag | 3 |
-| clean | serve | side | 3 |
-| fast | backhand | back | 1 |
-| fast | backhand | diag | 1 |
-| fast | backhand | side | 1 |
-| fast | forehand | back | 1 |
-| fast | forehand | diag | 1 |
-| fast | forehand | side | 1 |
-| fast | serve | back | 1 |
-| fast | serve | diag | 1 |
-| fast | serve | side | 1 |
+- Strokes: forehand, backhand, serve
+- Views: side, back, diagonal
+- 3 clean and 1 fast clip for each stroke-view combination (36 clips total)
 
-## Overall Reliability by Condition
+## MediaPipe Reliability Results
 
-| condition | mean_detection | std_detection | min_detection | max_detection | clips |
-| --- | --- | --- | --- | --- | --- |
-| fast | 0.895 | 0.056 | 0.829 | 0.966 | 9 |
-| clean | 0.892 | 0.054 | 0.822 | 0.974 | 27 |
+MediaPipe outputs a visibility value for each body landmark in each video frame. A keypoint was counted as **detected** in a frame if its value was at least 0.5. The detection rate was calculated using `detected frames / total frames processed`.
 
-## Clean Clips: Reliability by Stroke
+### Overall Reliability
 
-| stroke | mean_detection | std_detection | min_detection | max_detection | clips |
-| --- | --- | --- | --- | --- | --- |
-| serve | 0.917 | 0.046 | 0.851 | 0.974 | 9 |
-| backhand | 0.884 | 0.058 | 0.822 | 0.972 | 9 |
-| forehand | 0.875 | 0.052 | 0.831 | 0.974 | 9 |
+| Condition | Mean Detection | Std. Dev. | Min | Max | Clips |
+|---|---|---|---|---|---|
+| Clean | 0.892 | 0.054 | 0.822 | 0.974 | 27 |
+| Fast | 0.895 | 0.056 | 0.829 | 0.966 | 9 |
 
-## Clean Clips: Reliability by Camera View
+For both clean and fast clips, the detections rates were above 0.82. That means for most clips the model could reliably detect body landmarks, making it usable for analysis. The fast clips performed about the same as the clean clips, suggesting that moderate increases in stroke speed did not significantly reduce tracking reliability in this dataset.
 
-| view | mean_detection | std_detection | min_detection | max_detection | clips |
-| --- | --- | --- | --- | --- | --- |
-| diag | 0.938 | 0.026 | 0.910 | 0.974 | 9 |
-| side | 0.888 | 0.062 | 0.831 | 0.974 | 9 |
-| back | 0.849 | 0.017 | 0.822 | 0.877 | 9 |
+### Reliability by Stroke (Clean Only)
 
-## Clean Clips: Stroke/View Combinations
+| Stroke | Mean Detection | Std. Dev. | Min | Max |
+|---|---|---|---|---|
+| Serve | 0.917 | 0.046 | 0.851 | 0.974 |
+| Backhand | 0.884 | 0.058 | 0.822 | 0.972 |
+| Forehand | 0.875 | 0.052 | 0.831 | 0.974 |
 
-| stroke | view | mean_detection | std_detection | min_detection | max_detection | clips |
-| --- | --- | --- | --- | --- | --- | --- |
-| serve | side | 0.970 | 0.004 | 0.966 | 0.974 | 3 |
-| backhand | diag | 0.958 | 0.018 | 0.938 | 0.972 | 3 |
-| forehand | diag | 0.941 | 0.030 | 0.915 | 0.974 | 3 |
-| serve | diag | 0.916 | 0.006 | 0.910 | 0.922 | 3 |
-| serve | back | 0.865 | 0.013 | 0.851 | 0.877 | 3 |
-| backhand | side | 0.853 | 0.020 | 0.832 | 0.871 | 3 |
-| forehand | back | 0.843 | 0.011 | 0.831 | 0.852 | 3 |
-| forehand | side | 0.842 | 0.011 | 0.831 | 0.852 | 3 |
-| backhand | back | 0.840 | 0.017 | 0.822 | 0.856 | 3 |
+Serves had the highest average detection rate, while forehands had the lowest, though all three strokes performed well overall.
 
-## Clean vs Fast Comparison
+### Reliability by Camera View
 
-Negative values in `fast_minus_clean` mean the fast clip had lower reliability than the clean average.
+| Camera View | Mean Detection | Std. Dev. | Min | Max |
+|---|---|---|---|---|
+| Diagonal | 0.938 | 0.026 | 0.910 | 0.974 |
+| Side | 0.888 | 0.062 | 0.831 | 0.974 |
+| Back | 0.849 | 0.017 | 0.822 | 0.877 |
 
-| stroke | view | clean | fast | fast_minus_clean |
-| --- | --- | --- | --- | --- |
-| forehand | back | 0.843 | 0.829 | -0.014 |
-| forehand | side | 0.842 | 0.837 | -0.005 |
-| backhand | diag | 0.958 | 0.953 | -0.004 |
-| serve | side | 0.970 | 0.966 | -0.004 |
-| backhand | back | 0.840 | 0.838 | -0.002 |
-| backhand | side | 0.853 | 0.857 | 0.004 |
-| serve | diag | 0.916 | 0.924 | 0.008 |
-| forehand | diag | 0.941 | 0.951 | 0.010 |
-| serve | back | 0.865 | 0.900 | 0.035 |
+Diagonal view had the highest average detection rate, followed by side view and back view. Even the lowest average, back view, remained above 0.84, so all three camera views are usable under controlled recording conditions.
 
-## Clean Clips: Body Region Reliability
+### Reliability by Stroke/View Combination
 
-| region | mean_detection | std_detection | min_detection | max_detection | measurements |
-| --- | --- | --- | --- | --- | --- |
-| shoulders | 1.000 | 0.000 | 1.000 | 1.000 | 27 |
-| hips | 1.000 | 0.000 | 1.000 | 1.000 | 27 |
-| ankles | 0.992 | 0.018 | 0.920 | 1.000 | 27 |
-| knees | 0.948 | 0.072 | 0.774 | 1.000 | 27 |
-| elbows | 0.766 | 0.099 | 0.608 | 0.932 | 27 |
-| wrists | 0.645 | 0.249 | 0.195 | 0.966 | 27 |
+| Stroke | Camera View | Mean Detection | Std. Dev. | Min | Max |
+|---|---|---|---|---|---|
+| Serve | Side | 0.970 | 0.004 | 0.966 | 0.974 |
+| Backhand | Diagonal | 0.958 | 0.018 | 0.938 | 0.972 |
+| Forehand | Diagonal | 0.941 | 0.030 | 0.915 | 0.974 |
+| Serve | Diagonal | 0.916 | 0.006 | 0.910 | 0.922 |
+| Serve | Back | 0.865 | 0.013 | 0.851 | 0.877 |
+| Backhand | Side | 0.853 | 0.020 | 0.832 | 0.871 |
+| Forehand | Back | 0.843 | 0.011 | 0.831 | 0.852 |
+| Forehand | Side | 0.842 | 0.011 | 0.831 | 0.852 |
+| Backhand | Back | 0.840 | 0.017 | 0.822 | 0.856 |
 
-## Clean Clips: Feature Availability
+The strongest combinations were serve-side, backhand-diagonal, and forehand-diagonal. The lowest-scoring combinations were still above 0.82, showing that MediaPipe produced usable full-body pose estimates across all stroke-view combinations.
 
-| feature | mean_availability | std_availability | min_availability | max_availability | measurements |
-| --- | --- | --- | --- | --- | --- |
-| hip_line_angle | 1.000 | 0.000 | 1.000 | 1.000 | 27 |
-| shoulder_hip_separation_proxy | 1.000 | 0.000 | 1.000 | 1.000 | 27 |
-| shoulder_line_angle | 1.000 | 0.000 | 1.000 | 1.000 | 27 |
-| right_knee_angle | 0.959 | 0.095 | 0.571 | 1.000 | 27 |
-| left_knee_angle | 0.938 | 0.131 | 0.547 | 1.000 | 27 |
-| right_elbow_angle | 0.637 | 0.326 | 0.145 | 1.000 | 27 |
-| left_elbow_angle | 0.576 | 0.308 | 0.151 | 1.000 | 27 |
+---
 
-## Strongest Individual Clips
+### Body Region Reliability
 
-| video_id | filename | stroke | view | condition | mean_detection |
-| --- | --- | --- | --- | --- | --- |
-| TPEA_0021 | serve_side_clean_p1_03.MOV | serve | side | clean | 0.974 |
-| TPEA_0009 | forehand_diag_clean_p1_03.MOV | forehand | diag | clean | 0.974 |
-| TPEA_0016 | backhand_diag_clean_p1_01.MOV | backhand | diag | clean | 0.972 |
-| TPEA_0019 | serve_side_clean_p1_01.MOV | serve | side | clean | 0.970 |
-| TPEA_0034 | serve_side_fast_p1_01.MOV | serve | side | fast | 0.966 |
-| TPEA_0020 | serve_side_clean_p1_02.MOV | serve | side | clean | 0.966 |
-| TPEA_0017 | backhand_diag_clean_p1_02.MOV | backhand | diag | clean | 0.964 |
-| TPEA_0033 | backhand_diag_fast_p1_01.MOV | backhand | diag | fast | 0.953 |
+| Body Region | Mean Detection | Std. Dev. | Min | Max |
+|---|---|---|---|---|
+| Shoulders | 1.000 | 0.000 | 1.000 | 1.000 |
+| Hips | 1.000 | 0.000 | 1.000 | 1.000 |
+| Ankles | 0.992 | 0.018 | 0.920 | 1.000 |
+| Knees | 0.948 | 0.072 | 0.774 | 1.000 |
+| Elbows | 0.766 | 0.099 | 0.608 | 0.932 |
+| Wrists | 0.645 | 0.249 | 0.195 | 0.966 |
 
-## Weakest Individual Clips
+The detection rate for each body region was calculated by averaging the left and right landmarks (for example, the shoulders region includes the left and right shoulders). Shoulders and hips were detected perfectly in the clean clips, while ankles and knees were also highly reliable. Elbows and wrists had lower confidence-based detection rates, likely because arm landmarks are more affected by fast movement, body overlap, and camera angle.
 
-| video_id | filename | stroke | view | condition | mean_detection |
-| --- | --- | --- | --- | --- | --- |
-| TPEA_0015 | backhand_back_clean_p1_03.MOV | backhand | back | clean | 0.822 |
-| TPEA_0029 | forehand_back_fast_p1_01.MOV | forehand | back | fast | 0.829 |
-| TPEA_0004 | forehand_back_clean_p1_01.MOV | forehand | back | clean | 0.831 |
-| TPEA_0003 | forehand_side_clean_p1_03.MOV | forehand | side | clean | 0.831 |
-| TPEA_0012 | backhand_side_clean_p1_03.MOV | backhand | side | clean | 0.832 |
-| TPEA_0028 | forehand_side_fast_p1_01.MOV | forehand | side | fast | 0.837 |
-| TPEA_0032 | backhand_back_fast_p1_01.MOV | backhand | back | fast | 0.838 |
-| TPEA_0014 | backhand_back_clean_p1_02.MOV | backhand | back | clean | 0.842 |
+### Feature Availability
 
-## Overlay Videos to Manually Inspect
+| Feature | Mean Availability | Std. Dev. | Min | Max |
+|---|---|---|---|---|
+| Hip Line Angle | 1.000 | 0.000 | 1.000 | 1.000 |
+| Shoulder-Hip Separation Proxy | 1.000 | 0.000 | 1.000 | 1.000 |
+| Shoulder Line Angle | 1.000 | 0.000 | 1.000 | 1.000 |
+| Right Knee Angle | 0.959 | 0.095 | 0.571 | 1.000 |
+| Left Knee Angle | 0.938 | 0.131 | 0.547 | 1.000 |
+| Right Elbow Angle | 0.637 | 0.326 | 0.145 | 1.000 |
+| Left Elbow Angle | 0.576 | 0.308 | 0.151 | 1.000 |
 
-Inspect these videos to check whether the numeric reliability scores match the visual overlay quality.
-Prioritize the weakest clips, a few strongest clips, and representative fast clips.
+Analysis often requires looking at relationships between different body landmarks. A feature was counted as available only when all required keypoints had confidence scores above the threshold (for example, the right elbow angle requires the right shoulder, right elbow, and right wrist to be detected at once). Shoulder and hip-based features were available in every clean clip frame, knee-angle features were mostly available, and elbow-angle features were less reliable because they depend on wrist and elbow tracking.
 
-| video_id | filename | stroke | view | condition | mean_detection | overlay_path |
-| --- | --- | --- | --- | --- | --- | --- |
-| TPEA_0015 | backhand_back_clean_p1_03.MOV | backhand | back | clean | 0.822 | results/mediapipe/overlay_videos/TPEA_0015_backhand_back_clean_p1_03_mediapipe_overlay.mp4 |
-| TPEA_0029 | forehand_back_fast_p1_01.MOV | forehand | back | fast | 0.829 | results/mediapipe/overlay_videos/TPEA_0029_forehand_back_fast_p1_01_mediapipe_overlay.mp4 |
-| TPEA_0004 | forehand_back_clean_p1_01.MOV | forehand | back | clean | 0.831 | results/mediapipe/overlay_videos/TPEA_0004_forehand_back_clean_p1_01_mediapipe_overlay.mp4 |
-| TPEA_0003 | forehand_side_clean_p1_03.MOV | forehand | side | clean | 0.831 | results/mediapipe/overlay_videos/TPEA_0003_forehand_side_clean_p1_03_mediapipe_overlay.mp4 |
-| TPEA_0012 | backhand_side_clean_p1_03.MOV | backhand | side | clean | 0.832 | results/mediapipe/overlay_videos/TPEA_0012_backhand_side_clean_p1_03_mediapipe_overlay.mp4 |
-| TPEA_0021 | serve_side_clean_p1_03.MOV | serve | side | clean | 0.974 | results/mediapipe/overlay_videos/TPEA_0021_serve_side_clean_p1_03_mediapipe_overlay.mp4 |
-| TPEA_0009 | forehand_diag_clean_p1_03.MOV | forehand | diag | clean | 0.974 | results/mediapipe/overlay_videos/TPEA_0009_forehand_diag_clean_p1_03_mediapipe_overlay.mp4 |
-| TPEA_0016 | backhand_diag_clean_p1_01.MOV | backhand | diag | clean | 0.972 | results/mediapipe/overlay_videos/TPEA_0016_backhand_diag_clean_p1_01_mediapipe_overlay.mp4 |
-| TPEA_0028 | forehand_side_fast_p1_01.MOV | forehand | side | fast | 0.837 | results/mediapipe/overlay_videos/TPEA_0028_forehand_side_fast_p1_01_mediapipe_overlay.mp4 |
-| TPEA_0032 | backhand_back_fast_p1_01.MOV | backhand | back | fast | 0.838 | results/mediapipe/overlay_videos/TPEA_0032_backhand_back_fast_p1_01_mediapipe_overlay.mp4 |
-| TPEA_0031 | backhand_side_fast_p1_01.MOV | backhand | side | fast | 0.857 | results/mediapipe/overlay_videos/TPEA_0031_backhand_side_fast_p1_01_mediapipe_overlay.mp4 |
-| TPEA_0035 | serve_back_fast_p1_01.MOV | serve | back | fast | 0.900 | results/mediapipe/overlay_videos/TPEA_0035_serve_back_fast_p1_01_mediapipe_overlay.mp4 |
+---
 
-## Notes for Interpretation
+### Clean vs. Fast Comparison by Stroke/View Combination
 
-Fill this section in after watching the selected overlay videos.
+This table compares each fast clip to the clean average for the same stroke and camera view. Negative values mean the fast clip had lower reliability than the clean average; positive values mean it had higher reliability. The differences were small overall, suggesting that fast motion did not create major tracking failures in this controlled dataset.
 
-Questions to answer:
+| Stroke | Camera View | Clean Avg. | Fast Clip | Difference |
+|---|---|---|---|---|
+| Forehand | Back | 0.843 | 0.829 | -0.014 |
+| Forehand | Side | 0.842 | 0.837 | -0.005 |
+| Backhand | Diagonal | 0.958 | 0.953 | -0.004 |
+| Serve | Side | 0.970 | 0.966 | -0.004 |
+| Backhand | Back | 0.840 | 0.838 | -0.002 |
+| Backhand | Side | 0.853 | 0.857 | 0.004 |
+| Serve | Diagonal | 0.916 | 0.924 | 0.008 |
+| Forehand | Diagonal | 0.941 | 0.951 | 0.010 |
+| Serve | Back | 0.865 | 0.900 | 0.035 |
 
-1. Which stroke appears most reliable?
-2. Which camera view appears most reliable?
-3. Does fast motion visibly reduce tracking quality?
-4. Are wrists less stable than shoulders, hips, or knees?
-5. Which features seem trustworthy enough for a tennis stroke analyzer?
-6. Which features should be avoided when confidence is low?
+## Conclusion
+
+The initial MediaPipe analysis suggests that pose estimation is a promising foundation for tennis stroke analysis under controlled recording conditions. Across the 36 self-recorded clips, MediaPipe produced consistently strong full-body pose tracking. The overall detection rates were high for both clean clips (`0.892`) and fast clips (`0.895`), indicating that moderate increases in stroke speed did not significantly reduce tracking reliability in this dataset.
+
+The results also show that recording angle and body region matter. Diagonal-view clips had the highest average detection rate among clean clips (`0.938`), followed by side view (`0.888`) and back view (`0.849`). However, all three angles still produced usable results, which suggests that a tennis stroke analyzer may not need to rely on one perfect camera angle as long as the player remains fully visible and the video is clearly framed.
+
+The body-region analysis revealed the most important limitation. MediaPipe tracked central and lower-body landmarks extremely well: shoulders and hips were detected with perfect reliability in the clean clips, ankles were highly reliable, and knees were also strong. In contrast, elbows and wrists were less reliable, with wrists showing the lowest mean detection rate (`0.645`). This difference is likely related to tennis-specific movement and camera angle. Depending on the view and stroke phase, the hitting arm, elbow, or wrist can be partially obstructed by the torso, the non-hitting arm, or the follow-through position. Back-view and side-view clips can especially create moments where the wrist is hidden behind the body or overlaps with another limb.
+
+This type of obstruction can affect the confidence score because the model has less visual evidence for the exact landmark location. Even if the skeleton overlay still appears generally correct, the wrist or elbow may receive a lower confidence score or become less stable across frames. This is important for tennis analysis because arm-based features, such as wrist path and elbow angle, depend on accurately locating the shoulder, elbow, and wrist at the same time.
+
+As a result, not all pose-based tennis features should be treated equally. Torso rotation, shoulder alignment, hip alignment, and knee-bend features appear to be more reliable first-stage features, while wrist-path and elbow-angle feedback should be used more cautiously. *The analyzer should only generate detailed arm feedback when the relevant wrist and elbow landmarks remain confidently detected across the important parts of the stroke.*
+
+Manual overlay inspection supported the overall reliability of the model. The skeletons appeared visually strong across the clips, with no major failures across stroke type, angle, or speed condition. However, the lower confidence scores for wrists and elbows show why visual inspection alone is not enough. A pose overlay can look generally correct while still being less reliable for precise arm-position measurements.
+
+The main takeaway is that MediaPipe can support a tennis stroke analyzer, but the analyzer should be confidence-aware. *Instead of assuming that every pose measurement is trustworthy, the system should check whether the required keypoints are reliable before generating feedback.* Features based on shoulders, hips, and knees can be prioritized first, while arm-based feedback should only be shown when wrist and elbow confidence remain high enough.
+
+Because this dataset uses one primary player and controlled recording conditions, these findings should be interpreted as a case study rather than a universal benchmark. Future analysis should test additional players, more difficult recording conditions, and other pose estimation models such as MoveNet or YOLO Pose. Still, these initial results provide a strong technical basis for building a more reliable tennis stroke analyzer: one that evaluates the quality of its own pose data before giving coaching feedback.
 
 Possible application to the tennis stroke analyzer:
 
