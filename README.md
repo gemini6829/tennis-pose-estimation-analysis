@@ -30,15 +30,12 @@ Possible future model:
 ## Dataset
 
 The dataset consists of short tennis practice clips recorded from different camera angles.
+Initial dataset: 36 self-recorded tennis clips. Includes forehands, backhands, and serves, from side, back, and diagonal views. Both slow and fast swing speeds.
 
 ## Initial MediaPipe Findings
 
-MediaPipe performed reliably across the starting dataset of 36 self-recorded tennis clips. The dataset included forehands, backhands, and serves from side, back, and diagonal camera views, with both clean and fast-motion clips.
-
-### Key Results
-
-| Comparison | Result |
-|---|---|
+| | |
+|:---:|:---:|
 | Clean clips | Mean detection rate: 0.892 |
 | Fast clips | Mean detection rate: 0.895 |
 | Best stroke, clean clips | Serve: 0.917 |
@@ -52,7 +49,7 @@ The strongest body regions were shoulders and hips, both with a mean detection r
 
 ### Main Takeaway
 
-MediaPipe appears suitable for extracting basic tennis movement features from controlled practice videos, especially torso rotation and lower-body features. However, wrist- and elbow-based feedback should be treated more cautiously because those landmarks were less reliable by confidence score.
+MediaPipe appears suitable for extracting basic tennis movement features from controlled practice videos, especially torso rotation and lower body features. However, wrist and elbow-based feedback should be treated more cautiously because those landmarks were less reliable by confidence score.
 
 For the full MediaPipe analysis, see:
 
