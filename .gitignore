@@ -7,14 +7,23 @@ __pycache__/
 data/raw_videos/*
 data/private_videos/*
 *.mp4
+*.MP4
 *.mov
 *.MOV
 *.avi
+*.AVI
 *.m4v
+*.M4V
 
 results/**/overlay_videos/*
 results/**/*.mp4
 results/**/*.mov
+
+results/mediapipe/keypoints/
+results/mediapipe/logs/
+results/mediapipe/analysis/
+results/mediapipe/features/
+results/mediapipe/figures/
 
 .ipynb_checkpoints/
 
@@ -23,9 +32,3 @@ results/**/*.mov
 !data/metadata/.gitkeep
 !results/.gitkeep
 !report/.gitkeep
-
-# Generated MediaPipe outputs
-results/mediapipe/keypoints/
-results/mediapipe/logs/
-results/mediapipe/analysis/
-results/mediapipe/figures/
