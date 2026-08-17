@@ -138,3 +138,38 @@ This table compares each fast clip to the clean average for the same stroke and 
 - Give feedback based on feature reliability. Instead of always returning every possible analysis, the system could decide which feedback is trustworthy for each clip. For example, one clip might receive shoulder-turn and knee-bend feedback, while another might skip wrist-path feedback because wrist tracking was unstable.
 
 - Add warnings when occlusion affects tracking. If the wrist or elbow disappears behind the body during contact or follow-through, the analyzer should lower confidence in arm-based feedback or explain that the clip is not ideal for arm analysis.
+
+## Figures
+
+### Body Region Reliability
+
+![MediaPipe body region reliability](figures/mediapipe_body_region_reliability.png)
+
+Shoulders, hips, ankles, and knees were the strongest regions, while wrists and elbows were less reliable.
+
+### Feature Availability
+
+![MediaPipe feature availability](figures/mediapipe_feature_availability.png)
+
+Shoulder- and hip-based features were available most consistently, while elbow-angle features were less reliable.
+
+### Detection by Camera View
+
+![MediaPipe detection by camera view](figures/mediapipe_detection_by_view.png)
+
+Diagonal view performed best in the clean clips, but all three views were usable.
+
+# Clean vs Fast Clips
+
+![MediaPipe clean vs fast comparison](figures/mediapipe_clean_vs_fast.png)
+
+The results between clean and fast-motion clips were very similar, suggesting that moderate increases in stroke speed did not significantly reduce pose-tracking reliability.
+
+### Example Feature Plots
+
+![Forehand shoulder-hip separation](figures/feature_forehand_side_shoulder_hip_separation.png)
+
+![Forehand right knee angle](figures/feature_forehand_side_right_knee_angle.png)
+
+These are a few examples of tennis-specific features extracted from MediaPipe keypoints.
+
