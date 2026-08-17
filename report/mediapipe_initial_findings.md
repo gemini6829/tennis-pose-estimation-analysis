@@ -159,7 +159,7 @@ Shoulder- and hip-based features were available most consistently, while elbow-a
 
 Diagonal view performed best in the clean clips, but all three views were usable.
 
-# Clean vs Fast Clips
+### Clean vs Fast Clips
 
 ![MediaPipe clean vs fast comparison](figures/mediapipe_clean_vs_fast.png)
 
