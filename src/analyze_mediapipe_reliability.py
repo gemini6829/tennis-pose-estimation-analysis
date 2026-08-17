@@ -344,7 +344,17 @@ def compute_clean_vs_fast_summary(overall_by_video):
     return pivot
 
 
-def make_simple_bar_chart(df, x_col, y_col, title, xlabel, ylabel, output_path):
+def make_simple_bar_chart(
+    df,
+    x_col,
+    y_col,
+    title,
+    xlabel,
+    ylabel,
+    output_path,
+    rotate_xticks=False,
+    xtick_fontsize=10,
+):
     if df.empty:
         return
 
@@ -354,6 +364,12 @@ def make_simple_bar_chart(df, x_col, y_col, title, xlabel, ylabel, output_path):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.ylim(0, 1.05)
+
+    if rotate_xticks:
+        plt.xticks(rotation=30, ha="right", fontsize=xtick_fontsize)
+    else:
+        plt.xticks(fontsize=xtick_fontsize)
+
     plt.tight_layout()
     plt.savefig(output_path, dpi=200)
     plt.close()
@@ -448,6 +464,8 @@ def make_figures(overall_by_video, region_by_video, feature_by_video):
         xlabel="Feature",
         ylabel="Availability Rate",
         output_path=FIGURE_DIR / "mediapipe_feature_availability_clean.png",
+        rotate_xticks=True,
+        xtick_fontsize=8,
     )
 
 
